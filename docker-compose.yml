@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  jira:
+    build: .
+    depends_on:
+      mysql:
+        condition: service_healthy
+#    environment:
+#      ATL_JDBC_URL: jdbc:mysql://mysql:3306/jira?useSSL=false
+#      ATL_JDBC_USER: root
+#      ATL_JDBC_PASSWORD: jira
+#      ATL_DB_DRIVER: com.mysql.jdbc.Driver
+#      ATL_DB_TYPE: mysql
+    volumes:
+      - type: bind
+        source: /tmp/localtime
+        target: /etc/localtime
+    ports:
+    - "7081:8080"
+
+  mysql:
+    build:
+      context: .
+      dockerfile: mysql-Dockerfile
+    volumes:
+      - type: volume
+        source: jira-mysql-data
+        target: /var/lib/mysql
+      - type: volume
+        source: jira-mysql-conf
+        target: /etc/mysql/conf.d
+    environment:
+      MYSQL_ROOT_PASSWORD: jira
+      MYSQL_DATABASE: jira
+    healthcheck:
+      test: ["CMD","mysqladmin","ping","-h","localhost","-uroot","-pjira"]
+      timeout: 3s
+      retries: 10
+
+
+volumes:
+  jira-mysql-data:
+  jira-mysql-conf:

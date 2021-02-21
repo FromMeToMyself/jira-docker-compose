@@ -1,0 +1,3 @@
+FROM mysql:5.7
+ENV MYSQL_CONFIG  "[mysqld]\n default-storage-engine=INNODB\n character_set_server=utf8mb4\n innodb_default_row_format=DYNAMIC\n innodb_large_prefix=ON\n innodb_file_format=Barracuda\n innodb_log_file_size=2G"
+RUN echo $MYSQL_CONFIG > /etc/mysql/conf.d/mysql.cnf
